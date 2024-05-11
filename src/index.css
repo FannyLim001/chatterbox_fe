@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=Russo+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  font-family: "Montserrat",
+    sans-serif;
+  font-weight: 600;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  color: #545454;
+}
+
+.navbar {
+  border-bottom: 1px solid #545454;
+}
+
+.brand-logo {
+  font-family: "Russo One",
+    sans-serif;
+  color: #FFE088;
+}
+
+span {
+  color: #FFAB5F;
+}
+
+.searchbar {
+  border: 1px solid #545454;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+input[type="text"] {
+  width: 100%;
+}
+
+input[type="text"]:focus {
+  outline: none;
+}
+
+p {
+  font-weight: 400;
+}
+
+.chats {
+  border-right: 1px solid #545454;
+}
+
+.chat-history {
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.active {
+  background-color: #FFE088;
+}
+
+.user-detail {
+  background-color: #FFE088;
+  padding: 15px;
+  border: 1px solid #545454;
+}
+
+.user-chat {
+  background-color: #F2F2F2;
+}
+
+.user-reply {
+  background-color: #FFE088;
+  padding: 10px 25px;
+  margin: 15px;
+  border-radius: 10px 0px 10px 10px;
+}
+
+.another-user-reply {
+  background-color: #D8D8D8;
+  padding: 10px 25px;
+  margin: 15px;
+  border-radius: 0px 10px 10px 10px;
+}
+
+.user-type {
+  padding: 20px;
+  border: 1px solid #545454;
+}
