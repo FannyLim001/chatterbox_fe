@@ -38,6 +38,7 @@ const Home = () => {
 		{ username: "Friend2", lastActive: "5 minutes ago" },
 		{ username: "Friend3", lastActive: "10 minutes ago" },
 		{ username: "Friend4", lastActive: "15 minutes ago" },
+		{ username: "Friend5", lastActive: "20 minutes ago" },
 	];
 
 	const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -143,8 +144,21 @@ const Home = () => {
 							/>
 							<Searchbar />
 						</div>
-						{showFriends
-							? friends.map((friend, index) => (
+						{showFriends && (
+							<>
+								<div className="addfriend">
+									<h1 className="text-2xl mt-4">Add New Friends</h1>
+									<div className="flex flex-row gap-5 items-center mt-5">
+										<input
+											type="text"
+											placeholder="#chatters username"
+											className="friendinput"
+											style={{ maxWidth: "100%" }}
+										/>
+										<button className="friendbtn">Send Friend Request</button>
+									</div>
+								</div>
+								{friends.map((friend, index) => (
 									<ChatBubble
 										key={index}
 										username={friend.username}
@@ -152,17 +166,20 @@ const Home = () => {
 										isActive={selectedChat === index}
 										onClick={() => handleChatBubbleClick(index, true)}
 									/>
-							  ))
-							: users.map((userData, index) => (
-									<ChatBubble
-										key={index}
-										username={userData.username}
-										timestamp={userData.timestamp}
-										text={userData.text}
-										isActive={selectedChat === index}
-										onClick={() => handleChatBubbleClick(index, false)}
-									/>
-							  ))}
+								))}
+							</>
+						)}
+						{!showFriends &&
+							users.map((userData, index) => (
+								<ChatBubble
+									key={index}
+									username={userData.username}
+									timestamp={userData.timestamp}
+									text={userData.text}
+									isActive={selectedChat === index}
+									onClick={() => handleChatBubbleClick(index, false)}
+								/>
+							))}
 					</div>
 				)
 			) : (
