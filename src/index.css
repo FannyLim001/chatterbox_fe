@@ -103,6 +103,19 @@ p {
   border-radius: 10px;
 }
 
+.friendinput {
+  border: 1px solid #545454;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.friendbtn {
+  padding: 10px;
+  background-color: #FFE088;
+  border-radius: 10px;
+  width: 100%;
+}
+
 .active {
   background-color: #FFE088;
 }

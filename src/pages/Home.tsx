@@ -1,3 +1,4 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 import { useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import ChatBubble from "../components/ChatBubble";
@@ -10,7 +11,6 @@ import {
 	UserCircleIcon,
 } from "@heroicons/react/24/solid";
 import ChatReply from "../components/ChatReply";
-import Friends from "./Friends";
 
 const Home = () => {
 	const user = "Fanny";
@@ -33,34 +33,58 @@ const Home = () => {
 		{ username: "User2", timestamp: "11:30", text: "Hi there!" },
 	];
 
+	const friends = [
+		{ username: "Friend1", lastActive: "Just now" },
+		{ username: "Friend2", lastActive: "5 minutes ago" },
+		{ username: "Friend3", lastActive: "10 minutes ago" },
+		{ username: "Friend4", lastActive: "15 minutes ago" },
+	];
+
 	const isMobile = useMediaQuery({ maxWidth: 768 });
 
-	const handleChatBubbleClick = (index: number) => {
+	const handleChatBubbleClick = (index: number, isFriend: boolean) => {
 		if (isMobile) {
-			setSelectedChat(index); // Set the selected chat index if on mobile
+			setSelectedChat(index);
 			setShowChats(false);
-			setChatData({
-				username: users[index].username,
-				reply: users[index].text, // Set the reply from the selected chat
-			});
+			if (isFriend) {
+				setChatData({
+					username: friends[index].username,
+					reply: "Start a conversation with " + friends[index].username,
+				});
+			} else {
+				setChatData({
+					username: users[index].username,
+					reply: users[index].text,
+				});
+			}
 		} else {
 			setSelectedChat(index);
-			setChatData({
-				username: users[index].username,
-				reply: users[index].text,
-			});
+			if (isFriend) {
+				setChatData({
+					username: friends[index].username,
+					reply: "Start a conversation with " + friends[index].username,
+				});
+			} else {
+				setChatData({
+					username: users[index].username,
+					reply: users[index].text,
+				});
+			}
 		}
 	};
 
 	const handleNewChatClick = () => {
 		console.log("New chat clicked");
-		setShowChats(true);
+		setShowChats(true); // Set showChats to true
 		setSelectedChat(null); // Ensure selectedChat is null when clicking on new chat button
 		setChatData(null); // Reset chat data when clicking on new chat button
+		setShowFriends(false);
 	};
 
 	const handleFindFriends = () => {
 		setShowFriends(true);
+		setSelectedChat(null);
+		setChatData(null);
 	};
 
 	return (
@@ -119,16 +143,26 @@ const Home = () => {
 							/>
 							<Searchbar />
 						</div>
-						{users.map((userData, index) => (
-							<ChatBubble
-								key={index}
-								username={userData.username}
-								timestamp={userData.timestamp}
-								text={userData.text}
-								isActive={selectedChat === index}
-								onClick={() => handleChatBubbleClick(index)}
-							/>
-						))}
+						{showFriends
+							? friends.map((friend, index) => (
+									<ChatBubble
+										key={index}
+										username={friend.username}
+										text={friend.lastActive}
+										isActive={selectedChat === index}
+										onClick={() => handleChatBubbleClick(index, true)}
+									/>
+							  ))
+							: users.map((userData, index) => (
+									<ChatBubble
+										key={index}
+										username={userData.username}
+										timestamp={userData.timestamp}
+										text={userData.text}
+										isActive={selectedChat === index}
+										onClick={() => handleChatBubbleClick(index, false)}
+									/>
+							  ))}
 					</div>
 				)
 			) : (
@@ -142,16 +176,26 @@ const Home = () => {
 							/>
 							<Searchbar />
 						</div>
-						{users.map((userData, index) => (
-							<ChatBubble
-								key={index}
-								username={userData.username}
-								timestamp={userData.timestamp}
-								text={userData.text}
-								isActive={selectedChat === index}
-								onClick={() => handleChatBubbleClick(index)}
-							/>
-						))}
+						{showFriends
+							? friends.map((friend, index) => (
+									<ChatBubble
+										key={index}
+										username={friend.username}
+										text={friend.lastActive}
+										isActive={selectedChat === index}
+										onClick={() => handleChatBubbleClick(index, true)}
+									/>
+							  ))
+							: users.map((userData, index) => (
+									<ChatBubble
+										key={index}
+										username={userData.username}
+										timestamp={userData.timestamp}
+										text={userData.text}
+										isActive={selectedChat === index}
+										onClick={() => handleChatBubbleClick(index, false)}
+									/>
+							  ))}
 					</div>
 					{chatData ? (
 						<div className="chat p-4 w-1/2">
@@ -196,11 +240,33 @@ const Home = () => {
 						</div>
 					) : (
 						<div className="chat p-4 w-1/2 flex flex-col items-center justify-center">
-							<h1 className="text-2xl">ChatterBox for Website</h1>
-							<p>
-								Find your another <span>#chatters</span>
-							</p>
-							<img src="./Speech bubbles-bro.svg" alt="No chat data" />
+							{showFriends ? (
+								<>
+									<h1 className="text-2xl">Add New Friends</h1>
+									<p>
+										Add another <span>#chatters</span> using their chatters username
+									</p>
+									<div className="flex flex-row gap-5 items-center mt-5">
+										<input
+											type="text"
+											placeholder="#chatters username"
+											className="friendinput"
+											style={{ maxWidth: "100%" }}
+										/>
+										<button className="friendbtn">Send Friend Request</button>
+									</div>
+
+									<img src="./Social interaction-bro.svg" alt="Find Friends" />
+								</>
+							) : (
+								<>
+									<h1 className="text-2xl">ChatterBox for Website</h1>
+									<p>
+										Find your another <span>#chatters</span>
+									</p>
+									<img src="./Speech bubbles-bro.svg" alt="No chat data" />
+								</>
+							)}
 						</div>
 					)}
 				</div>

@@ -2,7 +2,7 @@ import { UserCircleIcon } from "@heroicons/react/24/solid";
 
 interface Props {
 	username: string;
-	timestamp: string;
+	timestamp?: string;
 	text: string;
 	isActive: boolean;
 	onClick: () => void;
