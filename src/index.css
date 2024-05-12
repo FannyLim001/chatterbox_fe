@@ -40,6 +40,24 @@ span {
   border-radius: 10px;
 }
 
+.inputbar {
+  border: 3px solid #545454;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.password-input-container {
+  position: relative;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: white;
+}
+
 input[type="text"] {
   width: 100%;
 }
@@ -48,8 +66,23 @@ input[type="text"]:focus {
   outline: none;
 }
 
+input[type="password"] {
+  width: 100%;
+}
+
+input[type="password"]:focus {
+  outline: none;
+}
+
 p {
   font-weight: 400;
+}
+
+.authbtn {
+  background-color: #FFE088;
+  padding: 15px;
+  width: 100%;
+  border-radius: 10px;
 }
 
 .chats {
@@ -57,6 +90,15 @@ p {
 }
 
 .chat-history {
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.friends {
+  border-right: 1px solid #545454;
+}
+
+.friend {
   padding: 15px;
   border-radius: 10px;
 }

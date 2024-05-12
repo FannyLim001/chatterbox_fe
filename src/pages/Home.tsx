@@ -10,11 +10,13 @@ import {
 	UserCircleIcon,
 } from "@heroicons/react/24/solid";
 import ChatReply from "../components/ChatReply";
+import Friends from "./Friends";
 
 const Home = () => {
 	const user = "Fanny";
 	const [selectedChat, setSelectedChat] = useState<number | null>(null);
 	const [showChats, setShowChats] = useState(true); // State variable to toggle showing chat bubbles
+	const [showFriends, setShowFriends] = useState(false); // State variable to toggle showing friends
 	const [chatData, setChatData] = useState<{
 		username: string;
 		reply: string;
@@ -57,7 +59,9 @@ const Home = () => {
 		setChatData(null); // Reset chat data when clicking on new chat button
 	};
 
-	const handleFindFriends = () => {};
+	const handleFindFriends = () => {
+		setShowFriends(true);
+	};
 
 	return (
 		<>
