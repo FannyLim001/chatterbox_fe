@@ -1,6 +1,8 @@
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon, UserCircleIcon } from "@heroicons/react/20/solid";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function classNames(...classes: string[]) {
 	return classes.filter(Boolean).join(" ");
@@ -11,6 +13,22 @@ export interface Props {
 }
 
 export default function Dropdown({ username }: Props) {
+	const navigate = useNavigate();
+
+	const handleLogout = async () => {
+		try {
+			// Send a POST request to the logout endpoint
+			await axios.post("/api/logout");
+			// Clear any client-side authentication state (e.g., token)
+			localStorage.removeItem("token");
+			// Redirect the user to the login page
+			navigate("/login");
+		} catch (error) {
+			console.error("Logout failed:", error);
+			// Handle logout failure if needed
+		}
+	};
+
 	return (
 		<Menu as="div" className="relative inline-block text-left">
 			<div>
@@ -46,7 +64,7 @@ export default function Dropdown({ username }: Props) {
 								</a>
 							)}
 						</Menu.Item>
-						<form method="POST" action="/logout">
+						<form onSubmit={handleLogout}>
 							<Menu.Item>
 								{({ active }) => (
 									<button

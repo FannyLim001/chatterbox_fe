@@ -1,8 +1,15 @@
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import React, { useState } from "react";
 
-const PasswordInput: React.FC = () => {
-	const [password, setPassword] = useState<string>("");
+interface PasswordInputProps {
+	password: string;
+	setPassword: React.Dispatch<React.SetStateAction<string>>;
+}
+
+const PasswordInput: React.FC<PasswordInputProps> = ({
+	password,
+	setPassword,
+}) => {
 	const [showPassword, setShowPassword] = useState<boolean>(false);
 
 	const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {

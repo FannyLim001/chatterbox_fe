@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 /* eslint-disable no-mixed-spaces-and-tabs */
 import { useState } from "react";
 import { useMediaQuery } from "react-responsive";
@@ -11,6 +12,7 @@ import {
 	UserCircleIcon,
 } from "@heroicons/react/24/solid";
 import ChatReply from "../components/ChatReply";
+import { PageLock } from "../helpers/PageLock";
 
 const Home = () => {
 	const user = "Fanny";
@@ -292,4 +294,4 @@ const Home = () => {
 	);
 };
 
-export default Home;
+export default PageLock(Home);
