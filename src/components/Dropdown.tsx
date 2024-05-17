@@ -3,6 +3,7 @@ import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon, UserCircleIcon } from "@heroicons/react/20/solid";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { AuthHelper } from "../helpers/AuthHelper";
 
 function classNames(...classes: string[]) {
 	return classes.filter(Boolean).join(" ");
@@ -14,14 +15,16 @@ export interface Props {
 
 export default function Dropdown({ username }: Props) {
 	const navigate = useNavigate();
+	const { setAuthenticated } = AuthHelper();
 
-	const handleLogout = async () => {
+	const handleLogout = async (e: React.FormEvent) => {
+		e.preventDefault(); // Prevent default form submission behavior
+		console.log("tes");
 		try {
 			// Send a POST request to the logout endpoint
-			await axios.post("/api/logout");
-			// Clear any client-side authentication state (e.g., token)
-			localStorage.removeItem("token");
+			await axios.post("/be/api/auth/logout");
 			// Redirect the user to the login page
+			setAuthenticated(false);
 			navigate("/login");
 		} catch (error) {
 			console.error("Logout failed:", error);

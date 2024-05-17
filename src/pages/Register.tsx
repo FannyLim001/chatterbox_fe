@@ -28,12 +28,8 @@ const Register = () => {
 	const handleRegister = async (e: React.FormEvent) => {
 		e.preventDefault(); // Prevent default form submission
 
-		console.log("Username:", username);
-		console.log("Email:", email);
-		console.log("Password:", password);
-
 		try {
-			const response = await axios.post("/api/register", {
+			const response = await axios.post("/be/api/auth/register", {
 				username,
 				email,
 				password,

@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable no-mixed-spaces-and-tabs */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import ChatBubble from "../components/ChatBubble";
 import Header from "../components/Header";
@@ -13,9 +13,76 @@ import {
 } from "@heroicons/react/24/solid";
 import ChatReply from "../components/ChatReply";
 import { PageLock } from "../helpers/PageLock";
+import axios from "axios";
+
+interface User {
+	username: string;
+	timestamp: string;
+	text: string;
+	// Add more properties as needed
+}
+
+interface Friend {
+	username: string;
+	lastActive: string;
+}
 
 const Home = () => {
-	const user = "Fanny";
+	// Retrieving the Username
+	const user = localStorage.getItem("username") || "";
+
+	const [displayedUsers, setDisplayedUsers] = useState<User[]>([]);
+	const [friends, setFriends] = useState<Friend[]>([]);
+
+	useEffect(() => {
+		const fetchUsers = async () => {
+			try {
+				// Fetch user data from the backend
+				const response = await axios.get<User[]>("/be/api/users");
+				// Map fetched users to the desired structure
+				const mappedUsers = response.data.map((user, index) => ({
+					username: user.username, // Assuming 'name' is the property in your database
+					timestamp: `${index + 1}:00`, // Generate timestamp dynamically
+					text: `Sample text ${index + 1}`, // Generate text dynamically
+				}));
+				// Set the mapped users in the state
+				setDisplayedUsers(mappedUsers);
+			} catch (error) {
+				console.error("Error fetching users:", error);
+			}
+		};
+
+		fetchUsers();
+
+		const fetchFriends = async () => {
+			try {
+				// Fetch friends' data from the backend
+				const response = await axios.get<{ friends: Friend[] }>("/be/api/friends");
+				console.log("Response data:", response.data); // Log the response data
+
+				// Check if response data contains 'friends' property and it's an array
+				if (Array.isArray(response.data.friends)) {
+					// Map fetched friends to the desired structure
+					const mappedFriends = response.data.friends.map((friend, index) => ({
+						username: friend.username,
+						lastActive: `${index + 1} minutes ago`,
+					}));
+					// Set the mapped friends in the state
+					setFriends(mappedFriends);
+				} else {
+					// Handle the case when 'friends' property is not an array
+					console.log("No friends found");
+					// Optionally, you can set an empty array for friends in the state
+					setFriends([]);
+				}
+			} catch (error) {
+				console.error("Error fetching friends:", error);
+			}
+		};
+
+		fetchFriends();
+	}, []);
+
 	const [selectedChat, setSelectedChat] = useState<number | null>(null);
 	const [showChats, setShowChats] = useState(true); // State variable to toggle showing chat bubbles
 	const [showFriends, setShowFriends] = useState(false); // State variable to toggle showing friends
@@ -24,24 +91,26 @@ const Home = () => {
 		reply: string;
 	} | null>(null); // State variable to store chat data
 
-	const users = [
-		{ username: "User1", timestamp: "10:00", text: "Bonjour" },
-		{ username: "User2", timestamp: "11:30", text: "Hi there!" },
-		{ username: "User1", timestamp: "10:00", text: "Bonjour" },
-		{ username: "User2", timestamp: "11:30", text: "Hi there!" },
-		{ username: "User1", timestamp: "10:00", text: "Bonjour" },
-		{ username: "User2", timestamp: "11:30", text: "Hi there!" },
-		{ username: "User1", timestamp: "10:00", text: "Bonjour" },
-		{ username: "User2", timestamp: "11:30", text: "Hi there!" },
-	];
+	const [newFriend, setNewFriend] = useState("");
 
-	const friends = [
-		{ username: "Friend1", lastActive: "Just now" },
-		{ username: "Friend2", lastActive: "5 minutes ago" },
-		{ username: "Friend3", lastActive: "10 minutes ago" },
-		{ username: "Friend4", lastActive: "15 minutes ago" },
-		{ username: "Friend5", lastActive: "20 minutes ago" },
-	];
+	// const users = [
+	// 	{ username: "User1", timestamp: "10:00", text: "Bonjour" },
+	// 	{ username: "User2", timestamp: "11:30", text: "Hi there!" },
+	// 	{ username: "User1", timestamp: "10:00", text: "Bonjour" },
+	// 	{ username: "User2", timestamp: "11:30", text: "Hi there!" },
+	// 	{ username: "User1", timestamp: "10:00", text: "Bonjour" },
+	// 	{ username: "User2", timestamp: "11:30", text: "Hi there!" },
+	// 	{ username: "User1", timestamp: "10:00", text: "Bonjour" },
+	// 	{ username: "User2", timestamp: "11:30", text: "Hi there!" },
+	// ];
+
+	// const friends = [
+	// 	{ username: "Friend1", lastActive: "Just now" },
+	// 	{ username: "Friend2", lastActive: "5 minutes ago" },
+	// 	{ username: "Friend3", lastActive: "10 minutes ago" },
+	// 	{ username: "Friend4", lastActive: "15 minutes ago" },
+	// 	{ username: "Friend5", lastActive: "20 minutes ago" },
+	// ];
 
 	const isMobile = useMediaQuery({ maxWidth: 768 });
 
@@ -56,8 +125,8 @@ const Home = () => {
 				});
 			} else {
 				setChatData({
-					username: users[index].username,
-					reply: users[index].text,
+					username: displayedUsers[index].username,
+					reply: displayedUsers[index].text,
 				});
 			}
 		} else {
@@ -69,8 +138,8 @@ const Home = () => {
 				});
 			} else {
 				setChatData({
-					username: users[index].username,
-					reply: users[index].text,
+					username: displayedUsers[index].username,
+					reply: displayedUsers[index].text,
 				});
 			}
 		}
@@ -88,6 +157,21 @@ const Home = () => {
 		setShowFriends(true);
 		setSelectedChat(null);
 		setChatData(null);
+	};
+
+	const handleAddFriend = async (e: React.FormEvent) => {
+		e.preventDefault(); // Prevent default form submission
+
+		try {
+			const response = await axios.post(`/be/api/friends/${newFriend}`, {
+				username: newFriend, // Pass id in the request body
+			});
+			console.log(response.data); // Handle successful request
+			// Redirect or perform additional actions after successful request
+		} catch (error) {
+			console.error("Add friend error:", error);
+			// Handle error (display error message, etc.)
+		}
 	};
 
 	return (
@@ -160,19 +244,23 @@ const Home = () => {
 										<button className="friendbtn">Send Friend Request</button>
 									</div>
 								</div>
-								{friends.map((friend, index) => (
-									<ChatBubble
-										key={index}
-										username={friend.username}
-										text={friend.lastActive}
-										isActive={selectedChat === index}
-										onClick={() => handleChatBubbleClick(index, true)}
-									/>
-								))}
+								{friends.length === 0 ? (
+									<div>No friends available</div>
+								) : (
+									friends.map((friend, index) => (
+										<ChatBubble
+											key={index}
+											username={friend.username}
+											text={friend.lastActive}
+											isActive={selectedChat === index}
+											onClick={() => handleChatBubbleClick(index, true)}
+										/>
+									))
+								)}
 							</>
 						)}
 						{!showFriends &&
-							users.map((userData, index) => (
+							displayedUsers.map((userData, index) => (
 								<ChatBubble
 									key={index}
 									username={userData.username}
@@ -195,6 +283,11 @@ const Home = () => {
 							/>
 							<Searchbar />
 						</div>
+						{showFriends && friends.length === 0 && (
+							<div className="flex justify-center items-center h-screen">
+								No Friends Available
+							</div>
+						)}
 						{showFriends
 							? friends.map((friend, index) => (
 									<ChatBubble
@@ -205,7 +298,7 @@ const Home = () => {
 										onClick={() => handleChatBubbleClick(index, true)}
 									/>
 							  ))
-							: users.map((userData, index) => (
+							: displayedUsers.map((userData, index) => (
 									<ChatBubble
 										key={index}
 										username={userData.username}
@@ -265,15 +358,20 @@ const Home = () => {
 									<p>
 										Add another <span>#chatters</span> using their chatters username
 									</p>
-									<div className="flex flex-row gap-5 items-center mt-5">
-										<input
-											type="text"
-											placeholder="#chatters username"
-											className="friendinput"
-											style={{ maxWidth: "100%" }}
-										/>
-										<button className="friendbtn">Send Friend Request</button>
-									</div>
+									<form onSubmit={handleAddFriend}>
+										<div className="flex flex-row gap-5 items-center mt-5">
+											<input
+												type="text"
+												placeholder="#chatters username"
+												className="friendinput"
+												value={newFriend}
+												onChange={(e) => setNewFriend(e.target.value)}
+											/>
+											<button className="friendbtn" type="submit">
+												Add Friend
+											</button>
+										</div>
+									</form>
 
 									<img src="./Social interaction-bro.svg" alt="Find Friends" />
 								</>

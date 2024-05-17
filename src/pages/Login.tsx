@@ -5,11 +5,14 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/solid";
 import { AuthHelper } from "../helpers/AuthHelper";
+import { useDispatch } from "react-redux";
+import { login } from "../redux/slices/authSlice";
 
 const Login = () => {
 	const isMobile = useMediaQuery({ maxWidth: 768 });
 
 	const navigate = useNavigate();
+	const dispatch = useDispatch();
 
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
@@ -28,11 +31,12 @@ const Login = () => {
 		e.preventDefault(); // Prevent default form submission
 
 		try {
-			const response = await axios.post("/api/login", {
+			const response = await axios.post("/be/api/auth/login", {
 				username,
 				password,
 			});
 			console.log(response.data); // Handle successful login
+			dispatch(login({ username: response.data.username }));
 			// Redirect or perform additional actions after successful login
 			navigate("/");
 		} catch (error) {
