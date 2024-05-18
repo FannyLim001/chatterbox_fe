@@ -70,6 +70,8 @@ const Home = () => {
 
 	const isMobile = useMediaQuery({ maxWidth: 768 });
 
+	const userLoggedInId = localStorage.getItem("userid");
+
 	useEffect(() => {
 		const fetchUsers = async () => {
 			try {
@@ -80,6 +82,7 @@ const Home = () => {
 					timestamp: "",
 					text: "",
 				}));
+
 				setDisplayedUsers(mappedUsers);
 
 				mappedUsers.forEach(async (user) => {
@@ -119,13 +122,15 @@ const Home = () => {
 
 		const fetchFriends = async () => {
 			try {
-				const response = await axios.get<{ friends: Friend[] }>("/be/api/friends");
-				//console.log("Response data:", response.data);
+				const response = await axios.get<{ friends: Friend[] }>(
+					`/be/api/friends/${userLoggedInId}`
+				);
+				console.log("Response data:", response.data);
 
 				if (Array.isArray(response.data.friends)) {
 					const mappedFriends = response.data.friends.map((friend, index) => ({
-						username: friend.username,
-						id: friend.id,
+						username: friend.userInformation.username,
+						id: friend.userInformation.id,
 						lastActive: `${index + 1} minutes ago`,
 					}));
 					setFriends(mappedFriends);
@@ -149,6 +154,8 @@ const Home = () => {
 			} else {
 				selectedUser = displayedUsers[index];
 			}
+
+			console.log(selectedUser);
 
 			if (!selectedUser || !selectedUser.id) {
 				console.error("Error: Selected user or user id is undefined");
