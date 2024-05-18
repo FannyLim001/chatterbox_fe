@@ -120,7 +120,7 @@ const Home = () => {
 		const fetchFriends = async () => {
 			try {
 				const response = await axios.get<{ friends: Friend[] }>("/be/api/friends");
-				console.log("Response data:", response.data);
+				//console.log("Response data:", response.data);
 
 				if (Array.isArray(response.data.friends)) {
 					const mappedFriends = response.data.friends.map((friend, index) => ({
@@ -154,19 +154,16 @@ const Home = () => {
 				console.error("Error: Selected user or user id is undefined");
 				return;
 			}
-
+			setMessages([]);
 			setSelectedChat({ index, isFriend }); // Update selected chat with index and isFriend flag
 
 			// Fetch conversation ID for the selected user
 			const conversationResponse = await axios.get(
 				`/be/api/conversation/${selectedUser.id}`
 			);
-			const conversationId = conversationResponse.data.conversationId;
 
 			// Fetch chat history for the selected user using the conversation ID
-			const response = await axios.get(`/be/api/conversation/${conversationId}`);
-			const chatHistory: Message[] = response.data;
-			console.log(response.data);
+			const chatHistory: Message[] = conversationResponse.data;
 
 			setChatData({
 				username: selectedUser.username,
@@ -174,8 +171,9 @@ const Home = () => {
 					chatHistory.length > 0 ? chatHistory[chatHistory.length - 1].content : "",
 			});
 
-			if (conversationId) {
+			if (chatHistory.length !== 0) {
 				// Update messages state
+				console.log("tes");
 				setMessages(
 					chatHistory.map((message: Message) => ({
 						conversationId: message.conversationId,
@@ -183,9 +181,9 @@ const Home = () => {
 						reply: message.content,
 					}))
 				);
+				// Set selected conversation ID in state
+				setSelectedConversationId(chatHistory[0]?.conversationId);
 			}
-			// Set selected conversation ID in state
-			setSelectedConversationId(conversationId);
 
 			setShowChats(true);
 
@@ -219,6 +217,22 @@ const Home = () => {
 				username: newFriend,
 			});
 			console.log(response.data);
+
+			const data_response = await axios.get<{ friends: Friend[] }>(
+				"/be/api/friends"
+			);
+
+			if (Array.isArray(data_response.data.friends)) {
+				const mappedFriends = data_response.data.friends.map((friend, index) => ({
+					username: friend.username,
+					id: friend.id,
+					lastActive: `${index + 1} minutes ago`,
+				}));
+				setFriends(mappedFriends);
+			} else {
+				console.log("No friends found");
+				setFriends([]);
+			}
 		} catch (error) {
 			console.error("Add friend error:", error);
 		}
@@ -283,6 +297,8 @@ const Home = () => {
 			socket.off("receive_message");
 		};
 	}, []);
+
+	console.log(messages);
 
 	return (
 		<>
@@ -441,7 +457,9 @@ const Home = () => {
 									</div>
 								</div>
 								<div className="user-chat">
-									{messages.length > 0 ? (
+									{messages.filter(
+										(message) => message.conversationId === selectedConversationId
+									).length > 0 ? (
 										// Render chat messages if available
 										messages
 											.filter(
@@ -463,8 +481,8 @@ const Home = () => {
 											No Messages Available
 										</div>
 									)}
+									          
 								</div>
-
 								<div className="user-type">
 									<div className="flex flex-row justify-between">
 										<div className="flex items-center">
