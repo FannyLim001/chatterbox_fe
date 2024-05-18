@@ -303,7 +303,7 @@ const Home = () => {
 		return () => {
 			socket.off("receive_message");
 		};
-	}, []);
+	}, [messages]);
 
 	console.log(messages);
 
